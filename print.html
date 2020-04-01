@@ -83,7 +83,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="welcome.html">Welcome</a></li><li class="spacer"></li><li class="expanded "><a href="go/go.html"><strong aria-hidden="true">1.</strong> Go</a></li><li class="spacer"></li><li class="expanded "><a href="kubernetes/kubernetes.html"><strong aria-hidden="true">2.</strong> Kubernetes</a></li><li class="spacer"></li><li class="expanded "><a href="controllers/controllers.html"><strong aria-hidden="true">3.</strong> Controllers</a></li><li class="spacer"></li><li class="expanded "><a href="crossplane/crossplane.html"><strong aria-hidden="true">4.</strong> Crossplane</a></li><li class="spacer"></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="welcome.html">Welcome</a></li><li class="spacer"></li><li class="expanded "><a href="go/go.html"><strong aria-hidden="true">1.</strong> Go</a></li><li><ol class="section"><li class="expanded "><a href="go/main.html"><strong aria-hidden="true">1.1.</strong> An Entrypoint</a></li><li class="expanded "><a href="go/packages.html"><strong aria-hidden="true">1.2.</strong> Packages</a></li><li class="expanded "><a href="go/structs.html"><strong aria-hidden="true">1.3.</strong> Structs</a></li><li class="expanded "><a href="go/interfaces.html"><strong aria-hidden="true">1.4.</strong> Interfaces</a></li><li class="expanded "><a href="go/json-encoding.html"><strong aria-hidden="true">1.5.</strong> JSON Encoding</a></li><li class="spacer"></li></ol></li><li class="expanded "><a href="kubernetes/kubernetes.html"><strong aria-hidden="true">2.</strong> Kubernetes</a></li><li class="spacer"></li><li class="expanded "><a href="controllers/controllers.html"><strong aria-hidden="true">3.</strong> Controllers</a></li><li class="spacer"></li><li class="expanded "><a href="crossplane/crossplane.html"><strong aria-hidden="true">4.</strong> Crossplane</a></li><li class="spacer"></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -181,8 +181,485 @@ that allow us to knowledgeably explore Kubernetes and Crossplane. Go is renowned
 for its simplicity and readability, which makes it an excellent language for
 newcomers. Understanding a few concepts can get you up and running (and writing
 most of the code that we cover in this book) very quickly.</p>
+<h2><a class="header" href="#additional-resources" id="additional-resources">Additional Resources</a></h2>
+<ul>
+<li><a href="https://tour.golang.org/">A Tour of Go</a></li>
+<li><a href="https://dave.cheney.net/">Dave Cheney's Blog</a></li>
+<li><a href="https://gobyexample.com/">Go by Example</a></li>
+<li><a href="https://golang.org/doc/effective_go.html">Effective Go</a></li>
+</ul>
+<h1><a class="header" href="#an-entrypoint" id="an-entrypoint">An Entrypoint</a></h1>
+<p>Like most programming languages, Go requires an entrypoint to get a program
+started. You may have multiple entrypoints in a single project, but only one per
+package and the package name must be <code>main</code>. Inside of a <code>main</code> package, the
+<code>main()</code> function is used to start the program. However, in a non-<code>main</code>
+package, <code>main()</code> is not reserved as a special word and can be used as a normal
+function or variable.</p>
+<pre><code class="language-go">package main
+
+func main() {
+    // do things here
+}
+</code></pre>
+<p>Another special function to the <code>main</code> package is <code>init()</code>. The <code>init()</code>
+executes prior to <code>main()</code>, so it is commonly used for operations like reading
+and setting environment variables, parsing command flags, and opening database
+connections.</p>
+<pre><code class="language-go">package main
+
+import (
+    &quot;fmt&quot;
+    &quot;os&quot;
+)
+
+var envVars []string
+
+func init() { // this is run first
+    envVars = os.Environ()
+}
+
+func main() { // evnVars is populated when main() runs
+    fmt.Println(envVars)
+}
+</code></pre>
+<p>Note that neither the <code>main()</code> nor the <code>init()</code> function ever have explicit
+return values. If you need to exit <code>main()</code> early, you can use
+<a href="https://gobyexample.com/exit"><code>os.Exit()</code></a>.</p>
+<h1><a class="header" href="#packages" id="packages">Packages</a></h1>
+<p>Go programs are organized in <em>packages</em>.</p>
+<ul>
+<li>Package names must be <em>lowercase</em>. You may not include <em>underscores</em> or
+<em>mixedCaps</em>.</li>
+<li>You may only have one package per directory.</li>
+<li>Packages do not have to match the name of their directory, but it is
+convention to do so.</li>
+<li>Functions and variables that are <em>uppercase</em> in a package can be accessed
+directly by a consumer (i.e. they are &quot;public&quot;). These types are referred to
+as <em>exported</em>. Functions and variables that are <em>lowercase</em> in a package
+cannot be accessed outside of a package (i.e. they are &quot;private&quot;). </li>
+<li>Exported functions and variables should always have a comment block that
+explains their purposed and function. Most syntax checkers will flag exported
+arguments that do not have a comments block.</li>
+<li>Packages are imported by directory path, but used by package name. For
+instance, if I have a package named <code>coolpkg</code> in the
+<code>github.com/crossplane-book/crossplane-book/pkg/consumed</code> directory, the
+import will look as follows:</li>
+</ul>
+<pre><code class="language-go">
+package consumer
+
+import &quot;github.com/crossplane-book/crossplane-book/pkg/consumed&quot; // imported by directory
+
+func myFunc() {
+    coolpkg.DoThing() // use by package name [note: public DoThing()]
+}
+</code></pre>
+<ul>
+<li>You can alias a package import. This is especially useful when you import two
+packages of the same name:</li>
+</ul>
+<pre><code class="language-go">
+package consumer
+
+import (
+  onetype &quot;github.com/crossplane-book/crossplane-book/pkg/one/type&quot;
+  twotype &quot;github.com/crossplane-book/crossplane-book/pkg/two/type&quot;
+)
+
+func myFunc() {
+    onetype.GetAPIVersion()
+    twotype.GetAPIVersion()
+}
+</code></pre>
+<p>For additional information, checkout the <a href="https://rakyll.org/style-packages/">Go Package Style
+Guide</a>.</p>
+<h1><a class="header" href="#structs" id="structs">Structs</a></h1>
+<p>If you have a background in Object Oriented Program, you are likely familiar
+with the concept of classes. Go does not provide classes, but instead defines
+typed collections of fields as <em>structs</em>. A struct can have both field and
+methods. Structs can also embed other structs.</p>
+<p>Let's look at an example of a struct with fields:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+// A Person has qualities of a human
+type Person struct {
+    first string
+    last  string
+}
+
+func main() {
+    p := &amp;Person{ // you can create new struct instances with :=
+        first: &quot;Ada&quot;,
+        last:  &quot;Lovelace&quot;,
+    }
+
+    fmt.Println(p.first) // we can access &quot;first&quot; because Person is defined in this package
+}
+</code></pre>
+<p>Now let's take a look at a struct with a method:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+// A Person has qualities of a human
+type Person struct {
+	first string
+	last  string
+}
+
+// GetFirstName returns the first name of a person
+func (p *Person) GetFirstName() string { // methods are like functions but have a receiver: (p *Person)
+	return p.first
+}
+
+func main() {
+	p := &amp;Person{
+		first: &quot;Ada&quot;,
+		last:  &quot;Lovelace&quot;,
+	}
+
+	fmt.Println(p.GetFirstName()) // We could still get the Person first name outside of this package because GetFirstName is public
+}
+</code></pre>
+<p>Lastly, let's see what embedding a struct in another struct looks like:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+// A Person has qualities of a human
+type Person struct {
+	first string
+	last  string
+}
+
+// GetFirstName returns the first name of a person
+func (p *Person) GetFirstName() string {
+	return p.first
+}
+
+// An Athlete is a superset of a Person
+type Athlete struct {
+	Person
+	sport string
+}
+
+func main() {
+	p := &amp;Athlete{
+		Person: Person{
+			first: &quot;LeBron&quot;,
+			last:  &quot;James&quot;,
+		},
+		sport: &quot;basketball&quot;,
+	}
+
+	fmt.Println(p.GetFirstName())        // We do not have to access the Person sub-struct to call its methods
+	fmt.Println(p.Person.GetFirstName()) // We can explicitly reference the Person sub-struct and its methods
+
+	// Note: if Athlete had its own GetFirstName() method, then calling
+	// p.GetFirstName() would invoke it and p.Person.GetFirstName() would invoke
+	// the Person implementation.
+}
+</code></pre>
+<h1><a class="header" href="#interfaces" id="interfaces">Interfaces</a></h1>
+<p>Interfaces define a set of methods that must be implemented for a struct to
+satisfy the interface. They are used as a form of <em>generic programming</em> in Go,
+which does not support generics, <a href="https://blog.golang.org/why-generics">yet</a>.</p>
+<p>Like structs, interfaces can embed other interfaces, and a struct must satisfy
+all methods of the embedded interface and the parent interface. Let's look at a
+few examples.</p>
+<p>A simple interface:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+// A Being can return its first and last name
+type Being interface {
+    GetFirstName() string
+    GetLastName() string
+}
+
+// An Person is a human
+type Person struct {
+    first       string
+    last        string
+    age         int
+    nationality string
+}
+
+// GetFirstName get the first name of a Person
+func (p *Person) GetFirstName() string {
+    return p.first
+}
+
+// GetLastName get the first name of a Person
+func (p *Person) GetLastName() string {
+    return p.last
+}
+
+// A Dog is a type of animal
+type Dog struct {
+    name  string
+    breed string
+}
+
+// GetFirstName get the first name of a Dog
+func (d *Dog) GetFirstName() string {
+    return d.name
+}
+
+// GetLastName get the first name of a Dog
+func (d *Dog) GetLastName() string {
+    // structs may implement an interface however they see fit
+    return &quot;&quot;
+}
+
+// GetFullName returns the full name for a Being
+func GetFullName(b Being) string {
+    // Passing a Being means we can contruct the fullname for any type that
+    // implements GetFirstName and GetLastName
+    return fmt.Sprintf(&quot;%s %s&quot;, b.GetFirstName(), b.GetLastName())
+}
+
+func main() {
+    p := &amp;Person{
+        first:       &quot;Ada&quot;,
+        last:        &quot;Lovelace&quot;,
+        age:         36,
+        nationality: &quot;British&quot;,
+    }
+
+    d := &amp;Dog{
+        name:  &quot;Spot&quot;,
+        breed: &quot;Corgi&quot;,
+    }
+
+    fmt.Println(GetFullName(p)) // prints &quot;Ada Lovelace&quot;
+    fmt.Println(GetFullName(d)) // prints &quot;Spot &quot;
+}
+</code></pre>
+<p>An interface with an embedded interface:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+// Aged is something that has an age
+type Aged interface {
+    GetAge() int
+}
+
+// A Being can return its first and last name
+type Being interface {
+    Aged
+    GetFirstName() string
+    GetLastName() string
+}
+
+// An Person is a human
+type Person struct {
+    first       string
+    last        string
+    age         int
+    nationality string
+}
+
+// GetFirstName get the first name of a Person
+func (p *Person) GetFirstName() string {
+    return p.first
+}
+
+// GetLastName get the first name of a Person
+func (p *Person) GetLastName() string {
+    return p.last
+}
+
+// GetAge gets the age of a Person
+func (p *Person) GetAge() int {
+    return p.age
+}
+
+// A Dog is a type of animal
+type Dog struct {
+    name  string
+    breed string
+    age   int
+}
+
+// GetFirstName get the first name of a Dog
+func (d *Dog) GetFirstName() string {
+    return d.name
+}
+
+// GetLastName get the first name of a Dog
+func (d *Dog) GetLastName() string {
+    return &quot;&quot;
+}
+
+// GetAge gets the age of a Dog
+func (d *Dog) GetAge() int {
+    return d.age
+}
+
+// GetFullName returns the full name for a Being
+func GetFullName(b Being) string {
+    return fmt.Sprintf(&quot;%s %s&quot;, b.GetFirstName(), b.GetLastName())
+}
+
+// GetFullNameAndAge returns the full name and age for a Being
+func GetFullNameAndAge(b Being) string {
+    return fmt.Sprintf(&quot;%s %s: %d&quot;, b.GetFirstName(), b.GetLastName(), b.GetAge())
+}
+
+// blank identifiers are useful for ensuring a type satisfies an interface at
+// compile time
+var _ Being = &amp;Person{}
+var _ Being = &amp;Dog{}
+
+func main() {
+    p := &amp;Person{
+        first:       &quot;Ada&quot;,
+        last:        &quot;Lovelace&quot;,
+        age:         36,
+        nationality: &quot;British&quot;,
+    }
+
+    d := &amp;Dog{
+        name:  &quot;Spot&quot;,
+        breed: &quot;Corgi&quot;,
+        age:   2,
+    }
+
+    fmt.Println(GetFullNameAndAge(p)) // prints &quot;Ada Lovelace: 36&quot;
+    fmt.Println(GetFullNameAndAge(d)) // prints &quot;Spot : 2&quot;
+}
+</code></pre>
+<h1><a class="header" href="#json-encoding" id="json-encoding">JSON Encoding</a></h1>
+<p>JSON encoding may not be commonplace in most introductions to Go (although you
+will almost certainly encounter it early on in writing Go programs), but it is
+especially important for defining and generating
+<a href="https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/">CustomResourceDefinitions</a>
+in Kubernetes (more on this later). A few important things to keep in mind when
+encoding and decoding JSON bytes to structs:</p>
+<ul>
+<li>Only exported fields will be encoded/decoded to JSON.</li>
+<li>Encoding a Go type to JSON is referred to as <em>marshaling</em>.</li>
+<li>Decoding JSON bytes to a Go type is referred to as <em>unmarshaling</em>.</li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-use-struct-tags-in-go">Struct
+tags</a>
+are used to manipulate JSON enconding / decoding (see examples below).</li>
+<li>Unexported fields are initialized to their zero value during unmarshaling.</li>
+<li>An exported field in a Go struct that is not included in the JSON that is
+being decoded are initialized to their zero value during unmarshaling.</li>
+<li>The <code>omitempty</code> tag specifies that a field should be omitted from the JSON
+encoding if the field has an empty value, defined as false, 0, a nil pointer,
+a nil interface value, and any empty array, slice, map, or string.</li>
+<li>The <code>-</code> tag specifies that a field should be omitted during both encoding and
+decoding.</li>
+</ul>
+<p>Let's look at a few examples.</p>
+<p>Unexported field is initialized to zero value:</p>
+<pre><code class="language-go">package main
+
+import (
+    &quot;encoding/json&quot;
+    &quot;fmt&quot;
+)
+
+// A Person has qualities of a human
+type Person struct {
+    First string `json:&quot;first&quot;`
+    last  string `json:&quot;last&quot;`
+}
+
+func main() {
+    p := &amp;Person{}
+
+    j := []byte(`{&quot;first&quot;: &quot;Ada&quot;, &quot;last&quot;: &quot;Lovelace&quot;}`)
+    _ = json.Unmarshal(j, p)
+    fmt.Println(p.First) // prints &quot;Ada&quot;
+    fmt.Println(p.last)  // prints &quot;&quot;
+}
+
+</code></pre>
+<p>Exported field with <code>-</code> tag is omitted:</p>
+<pre><code class="language-go">package main
+
+import (
+    &quot;encoding/json&quot;
+    &quot;fmt&quot;
+)
+
+// A Person has qualities of a human
+type Person struct {
+    First string `json:&quot;first&quot;`
+    Last  string `json:&quot;-&quot;`
+}
+
+func main() {
+    p := &amp;Person{}
+
+    j := []byte(`{&quot;first&quot;: &quot;Ada&quot;, &quot;last&quot;: &quot;Lovelace&quot;}`)
+    _ = json.Unmarshal(j, p)
+    fmt.Println(p.First) // prints &quot;Ada&quot;
+    fmt.Println(p.Last)  // prints &quot;&quot;
+
+    p.Last = &quot;Lovelace&quot;
+
+    j, _ = json.Marshal(p)
+    fmt.Println(string(j)) // prints {&quot;first&quot;:&quot;Ada&quot;}
+}
+
+</code></pre>
+<p>Encoding with <code>omitempty</code> tag:</p>
+<pre><code class="language-go">package main
+
+import (
+    &quot;encoding/json&quot;
+    &quot;fmt&quot;
+)
+
+// A Person has qualities of a human
+type Person struct {
+    First string `json:&quot;first&quot;`
+    Last  string `json:&quot;last&quot;`
+}
+
+// A PersonOmit has qualities of a human
+type PersonOmit struct {
+    First string `json:&quot;first&quot;`
+    Last  string `json:&quot;last,omitempty&quot;`
+}
+
+func main() {
+    p := &amp;Person{
+        First: &quot;Ada&quot;,
+        Last:  &quot;&quot;,
+    }
+
+    j, _ := json.Marshal(p)
+    fmt.Println(string(j)) // prints {&quot;first&quot;:&quot;Ada&quot;,&quot;last&quot;:&quot;&quot;}
+
+    o := &amp;PersonOmit{
+        First: &quot;Ada&quot;,
+        Last:  &quot;&quot;,
+    }
+
+    j, _ = json.Marshal(o)
+    fmt.Println(string(j)) // prints {&quot;first&quot;:&quot;Ada&quot;}
+}
+</code></pre>
+<p>For further detail on the JSON package, see the <a href="https://golang.org/pkg/encoding/json/">official
+documentation</a>.</p>
 <h1><a class="header" href="#kubernetes-overview" id="kubernetes-overview">Kubernetes Overview</a></h1>
+<p>Kubernetes bills itself as a &quot;production-grade container orchestrator&quot;. However,
+over time, it has grown to be much more than that. As you will find in the
+section on Crossplane, Kubernetes can provide a great deal of value without ever
+using it to orchestrate containerized workloads.</p>
+<p><img src="kubernetes/../media/components-of-kubernetes.png" alt="alt" /></p>
 <h1><a class="header" href="#what-is-a-controller" id="what-is-a-controller">What is a Controller?</a></h1>
+<h2><a class="header" href="#api-types" id="api-types">API Types</a></h2>
+<h2><a class="header" href="#reconciliation" id="reconciliation">Reconciliation</a></h2>
 <h1><a class="header" href="#crossplane" id="crossplane">Crossplane</a></h1>
 
                     </main>

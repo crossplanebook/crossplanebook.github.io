@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Go - crossplane</title>
+        <title>Interfaces - crossplane</title>
         
 
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -81,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="../welcome.html">Welcome</a></li><li class="spacer"></li><li class="expanded "><a href="../go/go.html" class="active"><strong aria-hidden="true">1.</strong> Go</a></li><li><ol class="section"><li class="expanded "><a href="../go/main.html"><strong aria-hidden="true">1.1.</strong> An Entrypoint</a></li><li class="expanded "><a href="../go/packages.html"><strong aria-hidden="true">1.2.</strong> Packages</a></li><li class="expanded "><a href="../go/structs.html"><strong aria-hidden="true">1.3.</strong> Structs</a></li><li class="expanded "><a href="../go/interfaces.html"><strong aria-hidden="true">1.4.</strong> Interfaces</a></li><li class="expanded "><a href="../go/json-encoding.html"><strong aria-hidden="true">1.5.</strong> JSON Encoding</a></li><li class="spacer"></li></ol></li><li class="expanded "><a href="../kubernetes/kubernetes.html"><strong aria-hidden="true">2.</strong> Kubernetes</a></li><li class="spacer"></li><li class="expanded "><a href="../controllers/controllers.html"><strong aria-hidden="true">3.</strong> Controllers</a></li><li class="spacer"></li><li class="expanded "><a href="../crossplane/crossplane.html"><strong aria-hidden="true">4.</strong> Crossplane</a></li><li class="spacer"></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="../welcome.html">Welcome</a></li><li class="spacer"></li><li class="expanded "><a href="../go/go.html"><strong aria-hidden="true">1.</strong> Go</a></li><li><ol class="section"><li class="expanded "><a href="../go/main.html"><strong aria-hidden="true">1.1.</strong> An Entrypoint</a></li><li class="expanded "><a href="../go/packages.html"><strong aria-hidden="true">1.2.</strong> Packages</a></li><li class="expanded "><a href="../go/structs.html"><strong aria-hidden="true">1.3.</strong> Structs</a></li><li class="expanded "><a href="../go/interfaces.html" class="active"><strong aria-hidden="true">1.4.</strong> Interfaces</a></li><li class="expanded "><a href="../go/json-encoding.html"><strong aria-hidden="true">1.5.</strong> JSON Encoding</a></li><li class="spacer"></li></ol></li><li class="expanded "><a href="../kubernetes/kubernetes.html"><strong aria-hidden="true">2.</strong> Kubernetes</a></li><li class="spacer"></li><li class="expanded "><a href="../controllers/controllers.html"><strong aria-hidden="true">3.</strong> Controllers</a></li><li class="spacer"></li><li class="expanded "><a href="../crossplane/crossplane.html"><strong aria-hidden="true">4.</strong> Crossplane</a></li><li class="spacer"></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -147,33 +147,191 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#an-introduction-to-go" id="an-introduction-to-go">An Introduction to Go</a></h1>
-<p>We will not attempt to learn everything about Go in this book, mostly because
-that is not the primary focus. We will instead cover high-level fundamentals
-that allow us to knowledgeably explore Kubernetes and Crossplane. Go is renowned
-for its simplicity and readability, which makes it an excellent language for
-newcomers. Understanding a few concepts can get you up and running (and writing
-most of the code that we cover in this book) very quickly.</p>
-<h2><a class="header" href="#additional-resources" id="additional-resources">Additional Resources</a></h2>
-<ul>
-<li><a href="https://tour.golang.org/">A Tour of Go</a></li>
-<li><a href="https://dave.cheney.net/">Dave Cheney's Blog</a></li>
-<li><a href="https://gobyexample.com/">Go by Example</a></li>
-<li><a href="https://golang.org/doc/effective_go.html">Effective Go</a></li>
-</ul>
+                        <h1><a class="header" href="#interfaces" id="interfaces">Interfaces</a></h1>
+<p>Interfaces define a set of methods that must be implemented for a struct to
+satisfy the interface. They are used as a form of <em>generic programming</em> in Go,
+which does not support generics, <a href="https://blog.golang.org/why-generics">yet</a>.</p>
+<p>Like structs, interfaces can embed other interfaces, and a struct must satisfy
+all methods of the embedded interface and the parent interface. Let's look at a
+few examples.</p>
+<p>A simple interface:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+// A Being can return its first and last name
+type Being interface {
+    GetFirstName() string
+    GetLastName() string
+}
+
+// An Person is a human
+type Person struct {
+    first       string
+    last        string
+    age         int
+    nationality string
+}
+
+// GetFirstName get the first name of a Person
+func (p *Person) GetFirstName() string {
+    return p.first
+}
+
+// GetLastName get the first name of a Person
+func (p *Person) GetLastName() string {
+    return p.last
+}
+
+// A Dog is a type of animal
+type Dog struct {
+    name  string
+    breed string
+}
+
+// GetFirstName get the first name of a Dog
+func (d *Dog) GetFirstName() string {
+    return d.name
+}
+
+// GetLastName get the first name of a Dog
+func (d *Dog) GetLastName() string {
+    // structs may implement an interface however they see fit
+    return &quot;&quot;
+}
+
+// GetFullName returns the full name for a Being
+func GetFullName(b Being) string {
+    // Passing a Being means we can contruct the fullname for any type that
+    // implements GetFirstName and GetLastName
+    return fmt.Sprintf(&quot;%s %s&quot;, b.GetFirstName(), b.GetLastName())
+}
+
+func main() {
+    p := &amp;Person{
+        first:       &quot;Ada&quot;,
+        last:        &quot;Lovelace&quot;,
+        age:         36,
+        nationality: &quot;British&quot;,
+    }
+
+    d := &amp;Dog{
+        name:  &quot;Spot&quot;,
+        breed: &quot;Corgi&quot;,
+    }
+
+    fmt.Println(GetFullName(p)) // prints &quot;Ada Lovelace&quot;
+    fmt.Println(GetFullName(d)) // prints &quot;Spot &quot;
+}
+</code></pre>
+<p>An interface with an embedded interface:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+// Aged is something that has an age
+type Aged interface {
+    GetAge() int
+}
+
+// A Being can return its first and last name
+type Being interface {
+    Aged
+    GetFirstName() string
+    GetLastName() string
+}
+
+// An Person is a human
+type Person struct {
+    first       string
+    last        string
+    age         int
+    nationality string
+}
+
+// GetFirstName get the first name of a Person
+func (p *Person) GetFirstName() string {
+    return p.first
+}
+
+// GetLastName get the first name of a Person
+func (p *Person) GetLastName() string {
+    return p.last
+}
+
+// GetAge gets the age of a Person
+func (p *Person) GetAge() int {
+    return p.age
+}
+
+// A Dog is a type of animal
+type Dog struct {
+    name  string
+    breed string
+    age   int
+}
+
+// GetFirstName get the first name of a Dog
+func (d *Dog) GetFirstName() string {
+    return d.name
+}
+
+// GetLastName get the first name of a Dog
+func (d *Dog) GetLastName() string {
+    return &quot;&quot;
+}
+
+// GetAge gets the age of a Dog
+func (d *Dog) GetAge() int {
+    return d.age
+}
+
+// GetFullName returns the full name for a Being
+func GetFullName(b Being) string {
+    return fmt.Sprintf(&quot;%s %s&quot;, b.GetFirstName(), b.GetLastName())
+}
+
+// GetFullNameAndAge returns the full name and age for a Being
+func GetFullNameAndAge(b Being) string {
+    return fmt.Sprintf(&quot;%s %s: %d&quot;, b.GetFirstName(), b.GetLastName(), b.GetAge())
+}
+
+// blank identifiers are useful for ensuring a type satisfies an interface at
+// compile time
+var _ Being = &amp;Person{}
+var _ Being = &amp;Dog{}
+
+func main() {
+    p := &amp;Person{
+        first:       &quot;Ada&quot;,
+        last:        &quot;Lovelace&quot;,
+        age:         36,
+        nationality: &quot;British&quot;,
+    }
+
+    d := &amp;Dog{
+        name:  &quot;Spot&quot;,
+        breed: &quot;Corgi&quot;,
+        age:   2,
+    }
+
+    fmt.Println(GetFullNameAndAge(p)) // prints &quot;Ada Lovelace: 36&quot;
+    fmt.Println(GetFullNameAndAge(d)) // prints &quot;Spot : 2&quot;
+}
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
-                            <a rel="prev" href="../welcome.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../go/structs.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
 
                         
-                            <a rel="next" href="../go/main.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../go/json-encoding.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -185,13 +343,13 @@ most of the code that we cover in this book) very quickly.</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
-                    <a rel="prev" href="../welcome.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../go/structs.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
 
                 
-                    <a rel="next" href="../go/main.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../go/json-encoding.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 

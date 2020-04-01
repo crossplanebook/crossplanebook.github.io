@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Welcome - crossplane</title>
+        <title>Structs - crossplane</title>
         
 
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -11,21 +11,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500" rel="stylesheet" type="text/css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
         
@@ -35,7 +35,7 @@
     <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
-            var path_to_root = "";
+            var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "light" : "light";
         </script>
 
@@ -81,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div id="sidebar-scrollbox" class="sidebar-scrollbox">
-                <ol class="chapter"><li class="expanded affix "><a href="welcome.html" class="active">Welcome</a></li><li class="spacer"></li><li class="expanded "><a href="go/go.html"><strong aria-hidden="true">1.</strong> Go</a></li><li><ol class="section"><li class="expanded "><a href="go/main.html"><strong aria-hidden="true">1.1.</strong> An Entrypoint</a></li><li class="expanded "><a href="go/packages.html"><strong aria-hidden="true">1.2.</strong> Packages</a></li><li class="expanded "><a href="go/structs.html"><strong aria-hidden="true">1.3.</strong> Structs</a></li><li class="expanded "><a href="go/interfaces.html"><strong aria-hidden="true">1.4.</strong> Interfaces</a></li><li class="expanded "><a href="go/json-encoding.html"><strong aria-hidden="true">1.5.</strong> JSON Encoding</a></li><li class="spacer"></li></ol></li><li class="expanded "><a href="kubernetes/kubernetes.html"><strong aria-hidden="true">2.</strong> Kubernetes</a></li><li class="spacer"></li><li class="expanded "><a href="controllers/controllers.html"><strong aria-hidden="true">3.</strong> Controllers</a></li><li class="spacer"></li><li class="expanded "><a href="crossplane/crossplane.html"><strong aria-hidden="true">4.</strong> Crossplane</a></li><li class="spacer"></li></ol>
+                <ol class="chapter"><li class="expanded affix "><a href="../welcome.html">Welcome</a></li><li class="spacer"></li><li class="expanded "><a href="../go/go.html"><strong aria-hidden="true">1.</strong> Go</a></li><li><ol class="section"><li class="expanded "><a href="../go/main.html"><strong aria-hidden="true">1.1.</strong> An Entrypoint</a></li><li class="expanded "><a href="../go/packages.html"><strong aria-hidden="true">1.2.</strong> Packages</a></li><li class="expanded "><a href="../go/structs.html" class="active"><strong aria-hidden="true">1.3.</strong> Structs</a></li><li class="expanded "><a href="../go/interfaces.html"><strong aria-hidden="true">1.4.</strong> Interfaces</a></li><li class="expanded "><a href="../go/json-encoding.html"><strong aria-hidden="true">1.5.</strong> JSON Encoding</a></li><li class="spacer"></li></ol></li><li class="expanded "><a href="../kubernetes/kubernetes.html"><strong aria-hidden="true">2.</strong> Kubernetes</a></li><li class="spacer"></li><li class="expanded "><a href="../controllers/controllers.html"><strong aria-hidden="true">3.</strong> Controllers</a></li><li class="spacer"></li><li class="expanded "><a href="../crossplane/crossplane.html"><strong aria-hidden="true">4.</strong> Crossplane</a></li><li class="spacer"></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -116,7 +116,7 @@
                     <h1 class="menu-title">crossplane</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         
@@ -147,40 +147,108 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1><a class="header" href="#welcome" id="welcome">Welcome</a></h1>
-<p>Welcome to the Crossplane book! This book exists for anyone who wants to learn
-more about the open source <a href="https://crossplane.io">Crossplane</a> project. It
-explores concepts from a technical perspective with a goal of enabling a reader
-to contribute to and extend the project for their use-case. However, it does not
-assume that the reader is already familiar with <a href="https://golang.org/">Go</a>,
-<a href="https://kubernetes.io/">Kubernetes</a>, or the <a href="https://kubernetes.io/docs/concepts/architecture/controller/#controller-pattern">controller
-pattern</a>.
-It starts with the fundamentals and builds to deeper concepts.</p>
-<p>Where possible, we will always refer to existing guides and documentation. There
-are copious resources available on every topic we will cover, and there is no
-need to re-invent the wheel. We take the same stance on using existing
-frameworks and libraries. The only reason not to use existing code is if you
-know or suspect that it will not meet your needs in the short to medium term.</p>
-<p>As you learn more about Crossplane, you will understand how different it is from
-other Kubernetes components. However, Crossplane integrates with with Kubernetes
-because:</p>
-<ol>
-<li>It allows for standardization on a single API, making it easy to integrate
-into your existing workflow, and to play nice with other projects.</li>
-<li>It provides a production-grade scheduling engine out-of-the-box.</li>
-</ol>
-<p>If you are already familiar with Go, Kubernetes, and the controller pattern, you
-can jump right into learning about <a href="crossplane/crossplane.html">Crossplane</a>.
-Otherwise, let's <a href="go/go.html">get started</a>!</p>
+                        <h1><a class="header" href="#structs" id="structs">Structs</a></h1>
+<p>If you have a background in Object Oriented Program, you are likely familiar
+with the concept of classes. Go does not provide classes, but instead defines
+typed collections of fields as <em>structs</em>. A struct can have both field and
+methods. Structs can also embed other structs.</p>
+<p>Let's look at an example of a struct with fields:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+// A Person has qualities of a human
+type Person struct {
+    first string
+    last  string
+}
+
+func main() {
+    p := &amp;Person{ // you can create new struct instances with :=
+        first: &quot;Ada&quot;,
+        last:  &quot;Lovelace&quot;,
+    }
+
+    fmt.Println(p.first) // we can access &quot;first&quot; because Person is defined in this package
+}
+</code></pre>
+<p>Now let's take a look at a struct with a method:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+// A Person has qualities of a human
+type Person struct {
+	first string
+	last  string
+}
+
+// GetFirstName returns the first name of a person
+func (p *Person) GetFirstName() string { // methods are like functions but have a receiver: (p *Person)
+	return p.first
+}
+
+func main() {
+	p := &amp;Person{
+		first: &quot;Ada&quot;,
+		last:  &quot;Lovelace&quot;,
+	}
+
+	fmt.Println(p.GetFirstName()) // We could still get the Person first name outside of this package because GetFirstName is public
+}
+</code></pre>
+<p>Lastly, let's see what embedding a struct in another struct looks like:</p>
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+// A Person has qualities of a human
+type Person struct {
+	first string
+	last  string
+}
+
+// GetFirstName returns the first name of a person
+func (p *Person) GetFirstName() string {
+	return p.first
+}
+
+// An Athlete is a superset of a Person
+type Athlete struct {
+	Person
+	sport string
+}
+
+func main() {
+	p := &amp;Athlete{
+		Person: Person{
+			first: &quot;LeBron&quot;,
+			last:  &quot;James&quot;,
+		},
+		sport: &quot;basketball&quot;,
+	}
+
+	fmt.Println(p.GetFirstName())        // We do not have to access the Person sub-struct to call its methods
+	fmt.Println(p.Person.GetFirstName()) // We can explicitly reference the Person sub-struct and its methods
+
+	// Note: if Athlete had its own GetFirstName() method, then calling
+	// p.GetFirstName() would invoke it and p.Person.GetFirstName() would invoke
+	// the Person implementation.
+}
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
                         
+                            <a rel="prev" href="../go/packages.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
 
                         
-                            <a rel="next" href="go/go.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../go/interfaces.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         
@@ -192,9 +260,13 @@ Otherwise, let's <a href="go/go.html">get started</a>!</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
                 
+                    <a rel="prev" href="../go/packages.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
 
                 
-                    <a rel="next" href="go/go.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../go/interfaces.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
                 
@@ -217,14 +289,14 @@ Otherwise, let's <a href="go/go.html">get started</a>!</p>
         
 
         
-        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
         
 
-        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
         
